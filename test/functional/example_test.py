@@ -211,6 +211,25 @@ class ExampleTest(BitcoinTestFramework):
             for block in peer_receiving.block_receive_map.values():
                 assert_equal(block, 1)
 
+        # Study group request:
+        # Try getting node 1 to mine another block, send it to node 2,
+        # and check that node 2 received it.
+        self.log.info("Mine a new block in node1")
+        self.nodes[1].generate(nblocks=1)
+
+        height += 1
+
+        self.log.info("Make sure the block is created in node1")
+        assert_equal(self.nodes[1].getblockcount(), height)
+
+        self.log.info("Wait for node0 and node2 ")
+        self.sync_all()
+
+        self.log.info("Check if node2 received block from node1")
+        assert_equal(self.nodes[2].getblockcount(), height)
+
+        self.log.info("Check if node0 received block from node1")
+        assert_equal(self.nodes[0].getblockcount(), height)
 
 if __name__ == '__main__':
     ExampleTest().main()
